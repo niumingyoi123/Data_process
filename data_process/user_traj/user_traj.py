@@ -1,6 +1,7 @@
 import pymysql
 import util.geo_distance as geo
-import types
+# import util.categ_distance as Categ
+import util.BaiduMap_api as Categ
 
 def get_traj():
     db = pymysql.connect("localhost", "root", "", "user_trajectory")
@@ -63,26 +64,16 @@ def significance_score(stay_regions,users_traj,ST):
     catg_region = []
     for stay_region in stay_regions:
         max_score = 0
-        catg = catg_distance(stay_region[0])[1]
+        catg = Categ.categ_distance(stay_region[0][2],stay_region[0][1])[1]
         for location in stay_region:
             l_score = score_in_tradj(users_traj,location)*score_in_region(stay_region,location)
-            catg_dis = catg_distance(location)
+            catg_dis = Categ.categ_distance(location[2],location[1])
             if l_score > ST and (l_score/catg_dis[0]) > max_score:
                 max_score = l_score/catg_dis[0]
                 catg = catg_dis[1]
         if max_score > 0:
             catg_region.append(catg)
     return catg_region
-
-def catg_distance(location):
-    """
-
-    :param location:
-    :return: distance from  category, category name
-    """
-
-    return 1,2
-
 
 def score_in_region(stay_region,target_location):
     count = 0
@@ -101,4 +92,7 @@ def score_in_tradj(users_traj,target_location):
 
 users_traj = get_traj()
 stay_regions = stay_regions(users_traj,80,10)
-print(stay_regions)
+# print(stay_regions)
+
+catg_region = significance_score(stay_regions,users_traj,0.01)
+print(catg_region)
