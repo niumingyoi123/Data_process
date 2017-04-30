@@ -1,5 +1,5 @@
 import requests
-import util.geo_distance as geo
+
 
 def categ_distance(lat,lng):
     url = 'http://restapi.amap.com/v3/place/around?key=90f1893b379d5c849be5022002520ddc&location=%s,%s&output=json&sortrule=distance&offset=20&types=05|06|07'%(lat,lng)

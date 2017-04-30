@@ -1,7 +1,7 @@
 import pymysql
 import json
 
-db = pymysql.connect("localhost","root","","user_trajectory")
+db = pymysql.connect("localhost","root","123456","user_trajectory")
 cursor = db.cursor()
 geo_file = open("F:/new_geo_data","r")
 geo_datas = geo_file.readlines()
