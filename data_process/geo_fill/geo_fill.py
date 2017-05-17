@@ -6,16 +6,33 @@ import codecs
 
 class filling:
     def load_geo2(self):
-        if os.path.exists('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\201606\\pingan\\part_1'):
-            file_geo = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\201606\\pingan\\part_1','r')
-            geo_file=file_geo.readlines()
-            file_geo.close()
-            geo_routmacs = {}
-            for line in geo_file:
-                part = line.split(',')
-                geo_routmac={}
-                geo_routmac[part[1]]=[part[3],part[4]]
-                geo_routmacs[part[2]]=geo_routmac
+        for i in range(1,9):
+            if os.path.exists('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\201606\\pingan\\part_%d'%i):
+                file_geo = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\201606\\pingan\\part_%d'%i, 'r')
+                geo_file = file_geo.readlines()
+                file_geo.close()
+                geo_routmacs = {}
+                try:
+                    for line in geo_file:
+                        part = line.split(',')
+                        geo_routmac = {}
+                        geo_routmac[part[1]] = [part[3], part[4]]
+                        geo_routmacs[part[2]] = geo_routmac
+                except:
+                    print(line)
+        # if os.path.exists('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\201606\\pingan\\part_8'):
+        #     file_geo = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\201606\\pingan\\part_8','r')
+        #     geo_file=file_geo.readlines()
+        #     file_geo.close()
+        #     geo_routmacs = {}
+        #     try:
+        #         for line in geo_file:
+        #             part = line.split(',')
+        #             geo_routmac = {}
+        #             geo_routmac[part[1]] = [part[3], part[4]]
+        #             geo_routmacs[part[2]] = geo_routmac
+        #     except:
+        #         print(line)
         return geo_routmacs
 
     def load_user2(self,geo_routmacs):
@@ -26,7 +43,7 @@ class filling:
         user_datas_file.close()
         count=0
         blank_num=0
-        file_object = open('f:/new_geo_data', 'x')
+        file_object = open('f:/new_geo_data', 'a')
         for user_data in user_datas:
             try:
                count+=1
@@ -44,6 +61,7 @@ class filling:
                            load_user['longitude'] = geo_routmacs[routemac][ssid_geo][0]
                            load_user['latitude'] = geo_routmacs[routemac][ssid_geo][1]
                            file_object.write(json.dumps(load_user) + '\n')
+                           break
             except:
                 blank_num+=1
                 print(count)

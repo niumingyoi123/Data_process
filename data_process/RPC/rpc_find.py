@@ -1,19 +1,49 @@
-def rpc_find_rough(user_locations,times_threshold,time_span):
-    """
-    Confirm the users' belong to the target_region
-    :param user_locations: Users locations{deviceid:'deviceid' ,
-     pos:'[{'timestamp:'timestamp','lat':'lat','lng':'lng'},]'}
-    :param target_region: target region
-    :return: new user location list
-    """
-    find_resident_rough = []
-    for user_location in user_locations:
-        appear_times = len(user_location['pos'])
-        fisrt_time = user_location['pos'][0]['timestamp']
-        last_time = user_locations['pos'][appear_times-1]['timestamp']
-        if appear_times < times_threshold and last_time-fisrt_time < time_span:
-            continue
-        else:
-            find_resident_rough.append(user_location)
+from util.GaoDe_api import districts_filter
+from geojson import Point
+from geojson_utils import point_in_polygon
+import json,pymysql
+from datetime import timedelta
 
-    return find_resident_rough
+def resiednt_filter(district,d):
+    polygon = districts_filter(district)
+    geo_file = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\10.17-11.17\\geo_data_%d' % d, "r")
+    geo_datas = geo_file.readlines()
+    file_object = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\10.17-11.17\\%s_geo_data'%district, 'a')
+    for geo_data in geo_datas:
+        geo_data_json = json.loads(geo_data)
+        point = Point((float(geo_data_json['longitude']),float(geo_data_json['latitude'])))
+        if point_in_polygon(point,polygon):
+            file_object.write(json.dumps(geo_data_json) + '\n')
+
+
+def get_traj(times_threshold,time_span):
+    db = pymysql.connect("localhost", "root", "", "user_trajectory")
+
+    cursor = db.cursor()
+
+    sql = """ SELECT * FROM dongcheng WHERE DEVICEID in (SELECT DEVICEID FROM dongcheng GROUP BY DEVICEID HAVING COUNT(DEVICEID)>%d) ORDER BY DEVICEID,`TIMESTAMP`
+    """%times_threshold
+    rpc = []
+    try:
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        deviceid = result[0][2]
+        start_time = result[0][1]
+        end_time = result[0][1]
+        for row in result:
+            if row[2]!=deviceid:
+                if end_time-start_time>time_span:
+                    rpc.append(deviceid)
+                deviceid = row[2]
+                start_time = row[1]
+                end_time = row[1]
+            else:
+                end_time = row[1]
+        return rpc
+    except:
+        print("Error")
+
+rpc = get_traj(10,timedelta(days=5))
+print(rpc)
+
+
