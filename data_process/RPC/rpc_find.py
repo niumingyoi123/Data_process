@@ -16,7 +16,7 @@ def resiednt_filter(district,d):
             file_object.write(json.dumps(geo_data_json) + '\n')
 
 
-def get_traj(times_threshold,time_span):
+def get_traj_rpc(times_threshold,time_span):
     db = pymysql.connect("localhost", "root", "", "user_trajectory")
 
     cursor = db.cursor()
@@ -43,7 +43,7 @@ def get_traj(times_threshold,time_span):
     except:
         print("Error")
 
-rpc = get_traj(10,timedelta(days=5))
-print(rpc)
+# rpc = get_traj_rpc(10,timedelta(days=5))
+# print(rpc)
 
 

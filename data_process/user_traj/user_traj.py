@@ -3,6 +3,8 @@ import util.geo_distance as geo
 # import util.categ_distance as Categ
 import util.GaoDe_api as Categ
 from similiraty import similarity_dp
+from RPC.rpc_find import get_traj_rpc
+from datetime import timedelta
 
 def get_traj(user):
     db = pymysql.connect("localhost", "root", "", "user_trajectory")
@@ -10,7 +12,7 @@ def get_traj(user):
     cursor = db.cursor()
 
     # user = '869736020272661_9492bc4826f4'
-    sql = """ SELECT `TIMESTAMP`,LONGITUDE,LATITUDE FROM user_traj where DEVICEID='%s' ORDER BY `TIMESTAMP`
+    sql = """ SELECT `TIMESTAMP`,LONGITUDE,LATITUDE FROM dongcheng where DEVICEID='%s' ORDER BY `TIMESTAMP`
     """ % user
     users_traj = []
     try:
@@ -97,45 +99,77 @@ def score_in_tradj(users_traj,target_location):
 def cal_similarity(user,catg_region,categ_locations):
     tradjs = {}
     tradjs['deviceId'] = user
-    tradj = {}
     temp_list = []
     for i in range(len(categ_locations)):
+        tradj = {}
         tradj['timestamp'] = categ_locations[i][0]
         tradj['typecode'] = catg_region[i]
         temp_list.append(tradj)
     tradjs['tradj'] = temp_list
     return tradjs
 
+rpc = get_traj_rpc(10,timedelta(days=5))
+print(rpc)
+
+cal_list = []
+
+for user in rpc:
+    users_traj = get_traj(user)
+    print(users_traj)
+    user_stay_regions = stay_regions(users_traj,80,10)
+    print(user_stay_regions)
+    catg_region, categ_locations = significance_score(user_stay_regions, users_traj, 0.01)
+    print(catg_region)
+    print(categ_locations)
+    cal = cal_similarity(user,catg_region,categ_locations)
+    print(cal)
+    cal_list.append(cal)
+    print(cal_list)
+l_cal = len(cal_list)
+res = []
+
+for n in range(l_cal):
+    for m in range(l_cal):
+        if n==m:
+            continue
+        else:
+            sim = similarity_dp.g_lcss(cal_list[m],cal_list[n],3)
+            res.append(sim)
+
+print(res)
+# sim = similarity_dp.g_lcss(cal1,cal2,3)
 
 
-user1 = '869736020272661_9492bc4826f4'
-users_traj1 = get_traj(user1)
-print(users_traj1)
-stay_regions1 = stay_regions(users_traj1,80,10)
-print(stay_regions1)
+# user1 = '869736020272661_9492bc4826f4'
+# users_traj1 = get_traj(user1)
+# print("users_traj1  "+str(users_traj1))
+# stay_regions1 = stay_regions(users_traj1,80,10)
+# print("stay_regions1  "+str(stay_regions1))
+#
+# catg_region1,categ_locations1 = significance_score(stay_regions1,users_traj1,0.01)
+# print("catg_region1  "+str(catg_region1))
+# print("categ_locations1  "+str(categ_locations1))
+# print(len((catg_region1)))
+# print(len((categ_locations1)))
+# cal1 = cal_similarity(user1,catg_region1,categ_locations1)
+# print("cal1  "+str(cal1))
+#
+# user2 = '357623050199296_d05785efdf4c'
+# users_traj2 = get_traj(user2)
+# print("users_traj2  "+str(users_traj2))
+# stay_regions2 = stay_regions(users_traj2,80,10)
+# print("stay_regions2  "+str(stay_regions2))
+#
+# catg_region2,categ_locations2 = significance_score(stay_regions2,users_traj2,0.01)
+# print("catg_region2  "+str(catg_region2))
+# print("categ_locations2  "+str(categ_locations2))
+# print(len((catg_region2)))
+# print(len((categ_locations2)))
+# cal2 = cal_similarity(user2,catg_region2,categ_locations2)
+# print("cal2  "+str(cal2))
 
-catg_region1,categ_locations1 = significance_score(stay_regions1,users_traj1,0.01)
-print(catg_region1)
-print(categ_locations1)
-print(len((catg_region1)))
-print(len((categ_locations1)))
-cal1 = cal_similarity(user1,catg_region1,categ_locations1)
-print(cal1)
+# sim = similarity_dp.g_lcss(cal1,cal2,3)
+# print("sim  "+str(sim))
 
-user2 = '357623050199296_d05785efdf4c'
-users_traj2 = get_traj(user2)
-print(users_traj2)
-stay_regions2 = stay_regions(users_traj2,80,10)
-print(stay_regions2)
 
-catg_region2,categ_locations2 = significance_score(stay_regions2,users_traj2,0.01)
-print(catg_region2)
-print(categ_locations2)
-print(len((catg_region2)))
-print(len((categ_locations2)))
-cal2 = cal_similarity(user2,catg_region2,categ_locations2)
-print(cal2)
-
-sim = similarity_dp.g_lcss(cal1,cal2,3)
-print(sim)
 
