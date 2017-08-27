@@ -23,9 +23,10 @@ def resiednt_filter(district):
             print("out of district mark %d" % i)
     file_object.write('\n'.join(r_l))
 
-resiednt_filter("北京")
+# resiednt_filter("北京")
 
-def get_traj(times_threshold,time_span):
+
+def fetch_rpc(times_threshold, time_span):
     db = pymysql.connect("localhost", "root", "Meituan-0502", "user_trajectory")
 
     cursor = db.cursor()
@@ -52,7 +53,8 @@ def get_traj(times_threshold,time_span):
     except:
         print("Error")
 
-# rpc = get_traj(10,timedelta(days=5))
-# print(rpc)
+rpc = fetch_rpc(10, timedelta(days=5))
+print(len(rpc))
+print(rpc)
 
 
