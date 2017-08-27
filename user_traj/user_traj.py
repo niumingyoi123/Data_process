@@ -139,6 +139,10 @@ def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
             catg_region, categ_locations = significance_score(stay_region_list, user_traj, threshold)
         except:
             print("第%s个用户没有数据" % i)
+            if i % 50 == 0:
+                f = open('cal_list_%s' % i, 'wb')
+                pickle.dump(cal_list, f, True)
+                f.close()
             continue
         cal = cal_similarity(user, catg_region, categ_locations)
         cal_list.append(cal)
