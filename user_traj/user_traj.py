@@ -144,7 +144,7 @@ def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
         cal_list.append(cal)
         if i % 50 == 0:
             f = open('cal_list_%s' % i, 'wb')
-            pickle.dump(f, cal_list, True)
+            pickle.dump(cal_list, f,  True)
             f.close()
     return cal_list
 
