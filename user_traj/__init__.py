@@ -23,4 +23,4 @@ c2 = pickle.load(f2)
 
 f2.close()
 
-print(c2[0])
+print(c2)

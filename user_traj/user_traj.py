@@ -131,14 +131,25 @@ def cal_similarity(user, catg_region, categ_locations):
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
     cal_list = []
-    sorted_list = []
     for i, user in enumerate(rpc_list):
         print("第%s个用户%s " % (i, user))
         user_traj = get_traj(user)
         stay_region_list = stay_regions(user_traj, dt, tt)
-        catg_region, categ_locations = significance_score(stay_region_list, user_traj, threshold)
+        try:
+            catg_region, categ_locations = significance_score(stay_region_list, user_traj, threshold)
+        except:
+            print("第%s个用户没有数据" % i)
+            continue
         cal = cal_similarity(user, catg_region, categ_locations)
         cal_list.append(cal)
+        if i % 50 == 0:
+            f = open('cal_list_%s' % i, 'wb')
+            pickle.dump(f, cal_list, True)
+            f.close()
+    return cal_list
+
+def sorted_list_cal(cal_list, time_span):
+    sorted_list = []
     for i in range(len(cal_list)):
         sim_dict = {}
         for j in range(len(cal_list)):
@@ -153,8 +164,8 @@ def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
 
 rpc_list = fetch_rpc(10, timedelta(days=5))
 r = cal_sim_result(rpc_list, 80, 10, 0.01, 3)
-f = open('pickle_file', 'wb')
-c = pickle.dump(r, f, True)
-f.close()
+# f = open('pickle_file', 'wb')
+# c = pickle.dump(r, f, True)
+# f.close()
 print(r)
 
