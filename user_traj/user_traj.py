@@ -7,17 +7,19 @@ from RPC.rpc_find import fetch_rpc
 from datetime import timedelta
 import random
 import _pickle as pickle
+import json
+from util.date_encoder import DateEncoder
 
-app_key_list = ["6885b1753f6c5ef521d75990daebdd14",
-                "f0c2bc7f6610c797799e7ea117b47c27",
-                "20ea0728a88e602622a9e3ef208b7239",
-                "2e13909e8affc5e7848a3571dd093f86",
-                "6b5bf92cf073c09fd5bf475b04119369",
-                "703877bd8f093e5d5e04cde942341e57",
-                "b746d045991639578a764f91ba5fe3f2",
-                "2d1cbdfaa1402d13952c3bd622e2e5ab",
-                "cbaf54d66667fb9d050552658fc275be",
-                "92c558a0659dc398477d6ae39450ddda", ]
+app_key_list = ["52c469b8f1f26f14c28576d2d4b6e87c",
+                "ffc6fead741c315a8cc4876e07bab825",
+                "5cee07ef7640065cb182e870da66c7e1",
+                "e908e95d55dba5c8ec0089ddf5dc26e9",
+                "aa6783184da566114a4365c76e6a90ec",
+                "7ee9abe8c41894e05a825016661d5910",
+                "8c7f2f9d4607e4de174bf7e703f86de2",
+                "36a95e53e2977825875b968ad1f73238",
+                "5c95eeb4c28e0e0bfefd182eda0b2b35",
+                "51444c5064e6501a308290f433feff30", ]
 
 
 def get_traj(user):
@@ -26,7 +28,7 @@ def get_traj(user):
     cursor = db.cursor()
 
     # user = '869736020272661_9492bc4826f4'
-    sql = """ SELECT `TIMESTAMP`,LONGITUDE,LATITUDE FROM user_traj where DEVICEID='%s' ORDER BY `TIMESTAMP`
+    sql = """ SELECT `TIMESTAMP`,LONGITUDE,LATITUDE FROM beijing where DEVICEID='%s' ORDER BY `TIMESTAMP`
     """ % user
     users_traj = []
     try:
@@ -51,31 +53,35 @@ def stay_regions(users_traj, DT, TT):
     stay_regions = []
     ls = users_traj[0]
     le = users_traj[0]
-    for i in range(len(users_traj)):
-        if geo.great_circle_distance(ls[1], ls[2], users_traj[i][1], users_traj[i][2]) < DT:
-            le = users_traj[i]
+    p = 1
+    while p < len(users_traj):
+        while p < len(users_traj) and geo.great_circle_distance(ls[1], ls[2], users_traj[p][1], users_traj[p][2]) < DT:
+            le = users_traj[p]
+            p = p + 1
+        if p == len(users_traj):
+            break
+        s = users_traj.index(ls)
+        e = p-1
+        if int((le[0] - ls[0]).total_seconds()) >= TT * 60:
+            stay_region = []
+            for i in range(s, e + 1):
+                stay_region.append(users_traj[i])
+            stay_regions.append(stay_region)
         else:
-            s = users_traj.index(ls)
-            e = users_traj.index(le)
-            if int((le[0] - ls[0]).total_seconds()) >= TT * 60:
+            for i in range(s, e + 1):
                 stay_region = []
-                for i in range(s, e + 1):
-                    stay_region.append(users_traj[i])
+                stay_region.append(users_traj[i])
                 stay_regions.append(stay_region)
-            else:
-                for i in range(s, e + 1):
-                    stay_region = []
-                    stay_region.append(users_traj[i])
-                    stay_regions.append(stay_region)
-            ls = users_traj[i]
-            le = users_traj[i]
+        p = e+1
+        ls = users_traj[p]
+        le = users_traj[p]
+        p = p+1
     s = users_traj.index(ls)
-    e = users_traj.index(le)
+    e = p-1
     stay_region = []
     for i in range(s, e + 1):
         stay_region.append(users_traj[i])
     stay_regions.append(stay_region)
-
     return stay_regions
 
 
@@ -140,36 +146,57 @@ def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
         except:
             print("第%s个用户没有数据" % i)
             if i % 50 == 0:
-                f = open('cal_list_%s' % i, 'wb')
-                pickle.dump(cal_list, f, True)
-                f.close()
+                f_err = open('cal_list_%s' % i, 'wb')
+                pickle.dump(cal_list, f_err, True)
+                f_err.close()
             continue
         cal = cal_similarity(user, catg_region, categ_locations)
         cal_list.append(cal)
         if i % 50 == 0:
-            f = open('cal_list_%s' % i, 'wb')
-            pickle.dump(cal_list, f,  True)
-            f.close()
+            f_succ = open('cal_list_%s' % i, 'wb')
+            pickle.dump(cal_list, f_succ, True)
+            f_succ.close()
+    f_cal = open('cal_list', 'wb')
+    pickle.dump(cal_list, f_cal, True)
+    f_cal.close()
     return cal_list
 
 def sorted_list_cal(cal_list, time_span):
     sorted_list = []
     for i in range(len(cal_list)):
         sim_dict = {}
+        target_id = cal_list[i]['deviceId']
+        recommend_list = []
         for j in range(len(cal_list)):
             if i != j:
-                item_dict = {}
-                item_dict[cal_list[j]] = similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span)
-                sim_dict[cal_list[i]] = item_dict
-                sorted_list.append(sim_dict)
+                recommend_id = cal_list[j]['deviceId']
+                item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span))
+                recommend_list.append(item_tuple)
+        recommend_list.sort(key=lambda tup: tup[1], reverse=True)
+        sim_dict[target_id] = recommend_list
+        sorted_list.append(sim_dict)
     return sorted_list
 
 
 
-rpc_list = fetch_rpc(10, timedelta(days=5))
-r = cal_sim_result(rpc_list, 80, 10, 0.01, 3)
-# f = open('pickle_file', 'wb')
-# c = pickle.dump(r, f, True)
-# f.close()
-print(r)
+# rpc_list = fetch_rpc(10, timedelta(days=5))
+# r = cal_sim_result(rpc_list, 80, 10, 0.01, 3)
+f = open('cal_list', 'rb')
+cal_list = pickle.load(f)
+f.close()
+print(cal_list)
+sorted_list = sorted_list_cal(cal_list, 3)
+f_sorted = open('sorted_list', 'wb')
+pickle.dump(sorted_list, f_sorted, True)
+f_sorted.close()
+
+print(sorted_list)
+
+# user = "352419061869927_608F5C35E1D0"
+# dt = 80
+# tt = 10
+# user_traj = get_traj(user)
+# print(user_traj)
+# stay_region_list = stay_regions(user_traj, dt, tt)
+# print(stay_region_list)
 
