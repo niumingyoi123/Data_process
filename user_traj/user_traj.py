@@ -179,18 +179,18 @@ def sorted_list_cal(cal_list, time_span):
 
 
 
-# rpc_list = fetch_rpc(10, timedelta(days=5))
-# r = cal_sim_result(rpc_list, 80, 10, 0.01, 3)
-f = open('cal_list', 'rb')
-cal_list = pickle.load(f)
-f.close()
-print(cal_list)
-sorted_list = sorted_list_cal(cal_list, 3)
-f_sorted = open('sorted_list', 'wb')
-pickle.dump(sorted_list, f_sorted, True)
-f_sorted.close()
-
-print(sorted_list)
+rpc_list = fetch_rpc(10, timedelta(days=5))
+r = cal_sim_result(rpc_list, 80, 10, 0.01, 3)
+# f = open('cal_list', 'rb')
+# cal_list = pickle.load(f)
+# f.close()
+# print(cal_list)
+# sorted_list = sorted_list_cal(cal_list, 3)
+# f_sorted = open('sorted_list', 'wb')
+# pickle.dump(sorted_list, f_sorted, True)
+# f_sorted.close()
+#
+# print(sorted_list)
 
 # user = "352419061869927_608F5C35E1D0"
 # dt = 80
