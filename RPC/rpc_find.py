@@ -53,8 +53,8 @@ def fetch_rpc(times_threshold, time_span):
     except:
         print("Error")
 
-rpc = fetch_rpc(10, timedelta(days=5))
-print(len(rpc))
-print(rpc)
+# rpc = fetch_rpc(10, timedelta(days=5))
+# print(len(rpc))
+# print(rpc)
 
 
