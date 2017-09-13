@@ -27,7 +27,7 @@ def resiednt_filter(district):
 
 
 def fetch_rpc(times_threshold, time_span):
-    db = pymysql.connect("localhost", "root", "Meituan-0502", "user_trajectory")
+    db = pymysql.connect("localhost","root","123456","user_trajectory")
 
     cursor = db.cursor()
 

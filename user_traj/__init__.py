@@ -12,9 +12,16 @@ app_key_list = ["52c469b8f1f26f14c28576d2d4b6e87c",
                 "5c95eeb4c28e0e0bfefd182eda0b2b35",
                 "51444c5064e6501a308290f433feff30", ]
 
+app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
+                    "fa597aac66b40cdd3432bd714c5504b6",
+                    "c1bd6aa017e3bdba5547cb90bc8fbadc",
+                    "d312a94c6256571a525c822a17fd9cf3",
+                    "fed868981d30914861dbce35b4395e35",
+                    "b0045e54711a5534000a6710639b5c42",
+                    "fa684c3a5e08cbc29bf6ea5069d6be1c",
+                    "57279f9397e0aaceb3fef6705c7845b3",
+                    "7916fd8af577ae58caf43b4fdbadc29a",
+                    "7d9edea271e7314821c852e888cde315", ]
 
-image = '060200,070500,060200,070000,060200,050000,060200'
-
-l = image.split(',')
-
-print(l)
+app_key_list_2 += app_key_list
+print(app_key_list_2)

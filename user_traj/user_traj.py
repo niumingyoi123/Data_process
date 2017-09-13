@@ -32,9 +32,10 @@ app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
                     "7916fd8af577ae58caf43b4fdbadc29a",
                     "7d9edea271e7314821c852e888cde315", ]
 
+app_key_list_2 += app_key_list
 
 def get_traj(user):
-    db = pymysql.connect("localhost", "root", "Meituan-0502", "user_trajectory")
+    db = pymysql.connect("localhost","root","123456","user_trajectory")
 
     cursor = db.cursor()
 
@@ -101,12 +102,12 @@ def significance_score(stay_regions, users_traj, ST):
     categ_locations = []
     for stay_region in stay_regions:
         max_score = 0
-        catg = Categ.categ_distance(stay_region[0][2], stay_region[0][1], app_key_list_2[random.randint(0, 9)])[
+        catg = Categ.categ_distance(stay_region[0][2], stay_region[0][1], app_key_list_2[random.randint(0, 19)])[
             'typecode']
         categ_location = stay_region[0]
         for location in stay_region:
             l_score = score_in_tradj(users_traj, location) * score_in_region(stay_region, location)
-            catg_dis = Categ.categ_distance(location[2], location[1], app_key_list_2[random.randint(0, 9)])
+            catg_dis = Categ.categ_distance(location[2], location[1], app_key_list_2[random.randint(0, 19)])
             if l_score > ST and (l_score / catg_dis['distance']) > max_score:
                 max_score = l_score / catg_dis['distance']
                 catg = catg_dis['typecode']

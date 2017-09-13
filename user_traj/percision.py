@@ -12,7 +12,7 @@ def cal_recall(rec_list, test_list):
 
 
 def get_rec_list(sorted_list):
-    db = pymysql.connect("localhost", "root", "Meituan-0502", "user_trajectory")
+    db = pymysql.connect("localhost","root","123456","user_trajectory")
     cursor = db.cursor()
     for sort_poi in sorted_list:
         for k, v in sort_poi.items():
