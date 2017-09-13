@@ -21,6 +21,17 @@ app_key_list = ["52c469b8f1f26f14c28576d2d4b6e87c",
                 "5c95eeb4c28e0e0bfefd182eda0b2b35",
                 "51444c5064e6501a308290f433feff30", ]
 
+app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
+                    "fa597aac66b40cdd3432bd714c5504b6",
+                    "c1bd6aa017e3bdba5547cb90bc8fbadc",
+                    "d312a94c6256571a525c822a17fd9cf3",
+                    "fed868981d30914861dbce35b4395e35",
+                    "b0045e54711a5534000a6710639b5c42",
+                    "fa684c3a5e08cbc29bf6ea5069d6be1c",
+                    "57279f9397e0aaceb3fef6705c7845b3",
+                    "7916fd8af577ae58caf43b4fdbadc29a",
+                    "7d9edea271e7314821c852e888cde315", ]
+
 
 def get_traj(user):
     db = pymysql.connect("localhost", "root", "Meituan-0502", "user_trajectory")
@@ -90,12 +101,12 @@ def significance_score(stay_regions, users_traj, ST):
     categ_locations = []
     for stay_region in stay_regions:
         max_score = 0
-        catg = Categ.categ_distance(stay_region[0][2], stay_region[0][1], app_key_list[random.randint(0, 9)])[
+        catg = Categ.categ_distance(stay_region[0][2], stay_region[0][1], app_key_list_2[random.randint(0, 9)])[
             'typecode']
         categ_location = stay_region[0]
         for location in stay_region:
             l_score = score_in_tradj(users_traj, location) * score_in_region(stay_region, location)
-            catg_dis = Categ.categ_distance(location[2], location[1], app_key_list[random.randint(0, 9)])
+            catg_dis = Categ.categ_distance(location[2], location[1], app_key_list_2[random.randint(0, 9)])
             if l_score > ST and (l_score / catg_dis['distance']) > max_score:
                 max_score = l_score / catg_dis['distance']
                 catg = catg_dis['typecode']
@@ -136,27 +147,37 @@ def cal_similarity(user, catg_region, categ_locations):
 
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
-    cal_list = []
+    # cal_list = []
+    cal_list_file = open('cal_list_100_300_30', 'rb')
+    cal_list = pickle.load(cal_list_file)
     for i, user in enumerate(rpc_list):
+        if i <=100:
+            continue
         print("第%s个用户%s " % (i, user))
         user_traj = get_traj(user)
         stay_region_list = stay_regions(user_traj, dt, tt)
-        try:
-            catg_region, categ_locations = significance_score(stay_region_list, user_traj, threshold)
-        except:
-            print("第%s个用户没有数据" % i)
-            if i % 50 == 0:
-                f_err = open('cal_list_%s' % i, 'wb')
-                pickle.dump(cal_list, f_err, True)
-                f_err.close()
-            continue
+        attempts = 0
+        success = False
+        while attempts < 3 and not success:
+            try:
+                catg_region, categ_locations = significance_score(stay_region_list, user_traj, threshold)
+                success = True
+            except:
+                attempts += 1
+                if attempts == 3:
+                    break
+                print("第%s个用户没有数据" % i)
+                if i % 50 == 0:
+                    f_err = open('cal_list_%s_%s_%s' % (i, dt, tt), 'wb')
+                    pickle.dump(cal_list, f_err, True)
+                    f_err.close()
         cal = cal_similarity(user, catg_region, categ_locations)
         cal_list.append(cal)
         if i % 50 == 0:
-            f_succ = open('cal_list_%s' % i, 'wb')
+            f_succ = open('cal_list_%s_%s_%s' % (i, dt, tt), 'wb')
             pickle.dump(cal_list, f_succ, True)
             f_succ.close()
-    f_cal = open('cal_list', 'wb')
+    f_cal = open('cal_list_%s_%s' % (dt, tt), 'wb')
     pickle.dump(cal_list, f_cal, True)
     f_cal.close()
     return cal_list
@@ -180,11 +201,11 @@ def sorted_list_cal(cal_list, time_span):
 
 
 rpc_list = fetch_rpc(10, timedelta(days=5))
-r = cal_sim_result(rpc_list, 80, 10, 0.01, 3)
-# f = open('cal_list', 'rb')
-# cal_list = pickle.load(f)
-# f.close()
-# print(cal_list)
+r = cal_sim_result(rpc_list, 300, 30, 0.01, 3)
+f = open('cal_list', 'rb')
+cal_list = pickle.load(f)
+f.close()
+print(cal_list)
 # sorted_list = sorted_list_cal(cal_list, 3)
 # f_sorted = open('sorted_list', 'wb')
 # pickle.dump(sorted_list, f_sorted, True)
