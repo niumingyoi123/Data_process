@@ -149,7 +149,7 @@ def cal_similarity(user, catg_region, categ_locations):
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
     # cal_list = []
-    cal_list_file = open('cal_list_100_300_30', 'rb')
+    cal_list_file = open('cal_list_100_200_30', 'rb')
     cal_list = pickle.load(cal_list_file)
     for i, user in enumerate(rpc_list):
         if i <=100:
@@ -202,7 +202,7 @@ def sorted_list_cal(cal_list, time_span):
 
 
 rpc_list = fetch_rpc(10, timedelta(days=5))
-r = cal_sim_result(rpc_list, 300, 30, 0.01, 3)
+r = cal_sim_result(rpc_list, 200, 30, 0.01, 3)
 f = open('cal_list', 'rb')
 cal_list = pickle.load(f)
 f.close()
