@@ -23,5 +23,9 @@ app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
                     "7916fd8af577ae58caf43b4fdbadc29a",
                     "7d9edea271e7314821c852e888cde315", ]
 
-app_key_list_2 += app_key_list
-print(app_key_list_2)
+# app_key_list_2 += app_key_list
+# print(app_key_list_2)
+l = ['a','a','b']
+
+s = set(l)
+print(s)

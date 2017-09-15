@@ -149,10 +149,10 @@ def cal_similarity(user, catg_region, categ_locations):
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
     # cal_list = []
-    cal_list_file = open('cal_list_100_200_30', 'rb')
+    cal_list_file = open('cal_list_200_200_30', 'rb')
     cal_list = pickle.load(cal_list_file)
     for i, user in enumerate(rpc_list):
-        if i <=100:
+        if i <=200:
             continue
         print("第%s个用户%s " % (i, user))
         user_traj = get_traj(user)
@@ -192,7 +192,8 @@ def sorted_list_cal(cal_list, time_span):
         for j in range(len(cal_list)):
             if i != j:
                 recommend_id = cal_list[j]['deviceId']
-                item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span))
+                # item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span)) # 计算时间
+                item_tuple = (recommend_id, similarity_dp.g_lcss_week(cal_list[i], cal_list[j])) # 计算week
                 recommend_list.append(item_tuple)
         recommend_list.sort(key=lambda tup: tup[1], reverse=True)
         sim_dict[target_id] = recommend_list
@@ -201,18 +202,23 @@ def sorted_list_cal(cal_list, time_span):
 
 
 
-rpc_list = fetch_rpc(10, timedelta(days=5))
-r = cal_sim_result(rpc_list, 200, 30, 0.01, 3)
-f = open('cal_list', 'rb')
-cal_list = pickle.load(f)
+# rpc_list = fetch_rpc(10, timedelta(days=5))
+# r = cal_sim_result(rpc_list, 200, 30, 0.01, 3)
+f = open('cal_list_300_30', 'rb')
+cal_list_300_30 = pickle.load(f)
 f.close()
-print(cal_list)
-# sorted_list = sorted_list_cal(cal_list, 3)
-# f_sorted = open('sorted_list', 'wb')
-# pickle.dump(sorted_list, f_sorted, True)
-# f_sorted.close()
-#
-# print(sorted_list)
+print(cal_list_300_30)
+sorted_list_300_30 = sorted_list_cal(cal_list_300_30, 3)
+f_sorted = open('sorted_list_300_30_week_2', 'wb')
+pickle.dump(sorted_list_300_30, f_sorted, True)
+f_sorted.close()
+
+print(sorted_list_300_30)
+# f = open('sorted_list_300_30', 'rb')
+# sorted_list_300_30 = pickle.load(f)
+# f.close()
+# print(sorted_list_300_30)
+
 
 # user = "352419061869927_608F5C35E1D0"
 # dt = 80

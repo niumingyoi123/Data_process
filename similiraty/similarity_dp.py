@@ -50,7 +50,30 @@ def g_lcss(tradj0, tradj1, timespan):
                 C[i][j] = C[i-1][j-1]+score_type(t0[i-1]['typecode'],t1[j-1]['typecode'])
             else:
                 C[i][j] = max(C[i][j-1], C[i-1][j])
-    lcss = float(C[n0][n1])/min([n0, n1])
+    lcss = float(C[n0][n1])/((n0+n1)/2)
+
+    return lcss
+
+def g_lcss_week(tradj0, tradj1):
+    t0 = tradj0['tradj']
+    t1 = tradj1['tradj']
+    n0 = len(t0)
+    n1 = len(t1)
+
+    if n0 == 0 or n1 == 0 :
+        return 0
+
+    C = [[0] * (n1+1) for _ in range(n0+1)]
+
+    for i in range(1, n0+1):
+        for j in range(1, n1+1):
+            week1 = t0[i-1]['timestamp'].date().weekday()
+            week2 = t1[j-1]['timestamp'].date().weekday()
+            if week1 == week2:
+                C[i][j] = C[i-1][j-1]+score_type(t0[i-1]['typecode'],t1[j-1]['typecode'])
+            else:
+                C[i][j] = max(C[i][j-1], C[i-1][j])
+    lcss = float(C[n0][n1])/((n0+n1)/2)
 
     return lcss
 
@@ -77,8 +100,18 @@ def score_type(type_code1,type_code2):
 #
 # print(lcss)
 
-# t0 = {'deviceId': '358695077083884_202d071361e5', 'tradj': [{'timestamp': datetime.datetime(2016, 9, 22, 13, 8, 25), 'typecode': '070000'}]}
-# t1 = {'deviceId': '867361028130076_ec5a86a2e5d6', 'tradj': [{'timestamp': datetime.datetime(2016, 10, 18, 6, 45, 7), 'typecode': '070000'}, {'timestamp': datetime.datetime(2016, 10, 20, 11, 54, 45), 'typecode': '060305'}, {'timestamp': datetime.datetime(2016, 10, 20, 20, 55, 56), 'typecode': '070000'}]}
+# t0 = {'deviceId': '866723025533423_7451ba4e7aab', 'tradj': [{'timestamp': datetime.datetime(2016, 11, 12, 12, 15, 57), 'typecode': '060000'}, {'timestamp': datetime.datetime(2016, 11, 12, 14, 30, 12), 'typecode': '060000'}]}
+# t1 = {'deviceId': '868146029200690_accf85c1230f', 'tradj': [{'timestamp': datetime.datetime(2016, 9, 6, 20, 14, 22), 'typecode': '060602'}, {'timestamp': datetime.datetime(2016, 11, 5, 19, 17, 57), 'typecode': '071600'}, {'timestamp': datetime.datetime(2016, 11, 7, 17, 33, 38), 'typecode': '060602'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 0, 9), 'typecode': '050300'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 30, 9), 'typecode': '060000'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 40, 9), 'typecode': '060000'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 50, 9), 'typecode': '050118'}, {'timestamp': datetime.datetime(2016, 11, 12, 11, 0, 11), 'typecode': '060602'}]}
 #
+# timestamp = t0['tradj'][0]['timestamp']
+#
+# print(timestamp)
+#
+# d = timestamp.date()
+#
+# w = d.weekday()
+#
+# print(w)
+
 # sim = g_lcss(t0,t1,3)
 # print(sim)

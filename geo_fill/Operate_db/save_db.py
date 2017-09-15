@@ -22,20 +22,3 @@ def insert_db():
     #     db.rollback()
     db.close()
 
-def insert_rec_db(cal_list):
-    db = pymysql.connect("localhost","root","123456","user_trajectory")
-    cursor = db.cursor()
-    insert_list = []
-    sql = 'INSERT INTO rec_list (DEVICEID, REC_POI) VALUES(%s,%s)'
-    len_size = 0
-    for cal_poi in cal_list:
-        rec_poi_list = [tradj.get('typecode') for tradj in cal_poi.get('tradj')]
-        rec_poi_str = ','.join(rec_poi_list)
-        if len(rec_poi_str) > len_size:
-            len_size = len(rec_poi_str)
-        data = (cal_poi.get('deviceId'), rec_poi_str)
-        insert_list.append(data)
-    print(len_size)
-    cursor.executemany(sql, insert_list)
-    db.commit()
-    db.close()
