@@ -61,14 +61,3 @@ def insert_rec_db(cal_list):
     db.commit()
     db.close()
 
-# f_cal = open('cal_list', 'rb')
-# cal_list = pickle.load(f_cal)
-# f_cal.close()
-# insert_rec_db(cal_list)
-f_sorted = open('sorted_list_300_30_week_2', 'rb')
-sorted_list = pickle.load(f_sorted)
-# f_sorted.close()
-# print(cal_list)
-# print(sorted_list)
-
-get_rec_list(sorted_list)

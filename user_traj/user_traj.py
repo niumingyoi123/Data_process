@@ -148,12 +148,12 @@ def cal_similarity(user, catg_region, categ_locations):
 
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
-    # cal_list = []
-    cal_list_file = open('cal_list_200_200_30', 'rb')
-    cal_list = pickle.load(cal_list_file)
+    cal_list = []
+    # cal_list_file = open('cal_list_200_200_30', 'rb')
+    # cal_list = pickle.load(cal_list_file)
     for i, user in enumerate(rpc_list):
-        if i <=200:
-            continue
+        # if i <=200:
+        #     continue
         print("第%s个用户%s " % (i, user))
         user_traj = get_traj(user)
         stay_region_list = stay_regions(user_traj, dt, tt)
@@ -208,12 +208,12 @@ f = open('cal_list_300_30', 'rb')
 cal_list_300_30 = pickle.load(f)
 f.close()
 print(cal_list_300_30)
-sorted_list_300_30 = sorted_list_cal(cal_list_300_30, 3)
-f_sorted = open('sorted_list_300_30_week_2', 'wb')
-pickle.dump(sorted_list_300_30, f_sorted, True)
-f_sorted.close()
+# sorted_list_300_30 = sorted_list_cal(cal_list_300_30, 3)
+# f_sorted = open('sorted_list_300_30_week_2', 'wb')
+# pickle.dump(sorted_list_300_30, f_sorted, True)
+# f_sorted.close()
 
-print(sorted_list_300_30)
+# print(sorted_list_300_30)
 # f = open('sorted_list_300_30', 'rb')
 # sorted_list_300_30 = pickle.load(f)
 # f.close()
