@@ -4,38 +4,39 @@ import util.geo_distance as geo
 import util.GaoDe_api as Categ
 from similiraty import similarity_dp
 from RPC.rpc_find import fetch_rpc
-from datetime import timedelta
 import random
 import _pickle as pickle
+from datetime import timedelta
+import datetime
 import json
 from util.date_encoder import DateEncoder
 
-app_key_list = ["52c469b8f1f26f14c28576d2d4b6e87c",
-                "ffc6fead741c315a8cc4876e07bab825",
-                "5cee07ef7640065cb182e870da66c7e1",
-                "e908e95d55dba5c8ec0089ddf5dc26e9",
-                "aa6783184da566114a4365c76e6a90ec",
-                "7ee9abe8c41894e05a825016661d5910",
-                "8c7f2f9d4607e4de174bf7e703f86de2",
-                "36a95e53e2977825875b968ad1f73238",
-                "5c95eeb4c28e0e0bfefd182eda0b2b35",
-                "51444c5064e6501a308290f433feff30", ]
+app_key_list = ["92dfa9b76e3506a58fb42499b5f660cb",
+                "08a7e019c18c2f7d06ad4587f6e3bf4a",
+                "426d773a348c1a193b2ad66437e9cb4f",
+                "bf5d9acbe1efd70b6ac314033c07a378",
+                "9635274dfd23e2f6811ee76bee1ef9e1",
+                "16842e97ab134a01c8768068ba1a4a77",
+                "7268279905d486ff92a4dcd723dfc4cd",
+                "d9822af9d8215883ac586e685e179948",
+                "9d61345b294abd54bcf869ac36d9ea1e",
+                "7e73746735215c2f9308a54f425dab15",]
 
-app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
-                    "fa597aac66b40cdd3432bd714c5504b6",
-                    "c1bd6aa017e3bdba5547cb90bc8fbadc",
-                    "d312a94c6256571a525c822a17fd9cf3",
-                    "fed868981d30914861dbce35b4395e35",
-                    "b0045e54711a5534000a6710639b5c42",
-                    "fa684c3a5e08cbc29bf6ea5069d6be1c",
-                    "57279f9397e0aaceb3fef6705c7845b3",
-                    "7916fd8af577ae58caf43b4fdbadc29a",
-                    "7d9edea271e7314821c852e888cde315", ]
+app_key_list_2 = ["66d50cdfc47cff0151b2c7d3d4462457",
+                    "916bb8878e358ba1d6b967c9e129106e",
+                    "245f194817f0979f3ba4ef577b54455b",
+                    "59f833ce3dd9dbceb2a0babb8db79383",
+                    "b8866288424f845eca5c81b79d32ca2a",
+                    "5627ac77ee6d0184a68ee4ee2832ae9f",
+                    "cd4ef00ad0f9618439f25bdaa08a1574",
+                    "aaeecb30fc869bfd45ce3963f32f6c87",
+                    "55050e99cfb328e8842210d3bcb4f2b4",
+                    "18b8f8abf8aec5d2a89ef1ff46e6ea72",]
 
 app_key_list_2 += app_key_list
 
 def get_traj(user):
-    db = pymysql.connect("localhost","root","123456","user_trajectory")
+    db = pymysql.connect("localhost","root","Meituan-0502","user_trajectory")
 
     cursor = db.cursor()
 
@@ -74,7 +75,11 @@ def stay_regions(users_traj, DT, TT):
             break
         s = users_traj.index(ls)
         e = p-1
-        if int((le[0] - ls[0]).total_seconds()) >= TT * 60:
+        # if int((le[0] - ls[0]).total_seconds()) >= TT * 60:
+        t_big = max(le[0], ls[0])
+        t_small = min(le[0], ls[0])
+        t_small += datetime.timedelta(days=(t_big-t_small).days)
+        if le[0].weekday() == ls[0].weekday() and int((t_big-t_small).total_seconds()) >= TT * 60:
             stay_region = []
             for i in range(s, e + 1):
                 stay_region.append(users_traj[i])
@@ -149,19 +154,26 @@ def cal_similarity(user, catg_region, categ_locations):
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
     # cal_list = []
-    cal_list_file = open('cal_list_200_200_30', 'rb')
+    cal_list_file = open('cal_list_split_250_300_30', 'rb')
     cal_list = pickle.load(cal_list_file)
     for i, user in enumerate(rpc_list):
-        if i <=200:
+        if i <=250:
             continue
         print("第%s个用户%s " % (i, user))
         user_traj = get_traj(user)
-        stay_region_list = stay_regions(user_traj, dt, tt)
+        user_first = "%s_first" % user
+        user_second = "%s_second" % user
+        user_first_traj = user_traj[:int(len(user_traj)/2)]
+        user_second_traj = user_traj[int(len(user_traj)/2):]
+        # stay_region_list = stay_regions(user_traj, dt, tt)
+        first_stay_region_list = stay_regions(user_first_traj, dt, tt)
+        second_stay_region_list = stay_regions(user_second_traj, dt, tt)
         attempts = 0
         success = False
+
         while attempts < 3 and not success:
             try:
-                catg_region, categ_locations = significance_score(stay_region_list, user_traj, threshold)
+                catg_region_first, categ_locations_first = significance_score(first_stay_region_list, user_first_traj, threshold)
                 success = True
             except:
                 attempts += 1
@@ -169,16 +181,32 @@ def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
                     break
                 print("第%s个用户没有数据" % i)
                 if i % 50 == 0:
-                    f_err = open('cal_list_%s_%s_%s' % (i, dt, tt), 'wb')
+                    f_err = open('cal_list_split_%s_%s_%s' % (i, dt, tt), 'wb')
                     pickle.dump(cal_list, f_err, True)
                     f_err.close()
-        cal = cal_similarity(user, catg_region, categ_locations)
-        cal_list.append(cal)
+            try:
+                catg_region_second, categ_locations_second = significance_score(second_stay_region_list, user_second_traj, threshold)
+                success = True
+            except:
+                attempts += 1
+                if attempts == 3:
+                    break
+                print("第%s个用户没有数据" % i)
+                if i % 50 == 0:
+                    f_err = open('cal_list_split_%s_%s_%s' % (i, dt, tt), 'wb')
+                    pickle.dump(cal_list, f_err, True)
+                    f_err.close()
+        cal_first = cal_similarity(user_first, catg_region_first, categ_locations_first)
+        print(user_first)
+        cal_list.append(cal_first)
+        cal_second = cal_similarity(user_second, catg_region_second, categ_locations_second)
+        print(user_second)
+        cal_list.append(cal_second)
         if i % 50 == 0:
-            f_succ = open('cal_list_%s_%s_%s' % (i, dt, tt), 'wb')
+            f_succ = open('cal_list_split_%s_%s_%s' % (i, dt, tt), 'wb')
             pickle.dump(cal_list, f_succ, True)
             f_succ.close()
-    f_cal = open('cal_list_%s_%s' % (dt, tt), 'wb')
+    f_cal = open('cal_list_split_%s_%s' % (dt, tt), 'wb')
     pickle.dump(cal_list, f_cal, True)
     f_cal.close()
     return cal_list
@@ -192,8 +220,8 @@ def sorted_list_cal(cal_list, time_span):
         for j in range(len(cal_list)):
             if i != j:
                 recommend_id = cal_list[j]['deviceId']
-                # item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span)) # 计算时间
-                item_tuple = (recommend_id, similarity_dp.g_lcss_week(cal_list[i], cal_list[j])) # 计算week
+                item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span)) # 计算时间
+                # item_tuple = (recommend_id, similarity_dp.g_lcss_week(cal_list[i], cal_list[j])) # 计算week
                 recommend_list.append(item_tuple)
         recommend_list.sort(key=lambda tup: tup[1], reverse=True)
         sim_dict[target_id] = recommend_list
@@ -203,17 +231,17 @@ def sorted_list_cal(cal_list, time_span):
 
 
 # rpc_list = fetch_rpc(10, timedelta(days=5))
-# r = cal_sim_result(rpc_list, 200, 30, 0.01, 3)
-f = open('cal_list_300_30', 'rb')
-cal_list_300_30 = pickle.load(f)
+# r = cal_sim_result(rpc_list, 300, 30, 0.01, 3)
+f = open('cal_list_split_300_30', 'rb')
+cal_list_split_300_30 = pickle.load(f)
 f.close()
-print(cal_list_300_30)
-sorted_list_300_30 = sorted_list_cal(cal_list_300_30, 3)
-f_sorted = open('sorted_list_300_30_week_2', 'wb')
-pickle.dump(sorted_list_300_30, f_sorted, True)
+# print(cal_list_split_300_30)
+sorted_list_split_300_30_week = sorted_list_cal(cal_list_split_300_30, 3)
+f_sorted = open('sorted_list_split_300_30', 'wb')
+pickle.dump(sorted_list_split_300_30_week, f_sorted, True)
 f_sorted.close()
 
-print(sorted_list_300_30)
+# print(sorted_list_split_300_30_week)
 # f = open('sorted_list_300_30', 'rb')
 # sorted_list_300_30 = pickle.load(f)
 # f.close()

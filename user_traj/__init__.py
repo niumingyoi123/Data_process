@@ -25,7 +25,39 @@ app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
 
 # app_key_list_2 += app_key_list
 # print(app_key_list_2)
-l = ['a','a','b']
+# l = ['a','a','b']
 
-s = set(l)
-print(s)
+# t1 = datetime.datetime(2016, 9, 30, 5, 27, 23)
+# t2 = datetime.datetime(2016, 10, 21, 18, 54, 30)
+# print(t1.weekday())
+# print(t2.weekday())
+
+# print(t1>t2)
+
+# s =min(t1, t2)+datetime.timedelta(days=(max(t1, t2)-min(t1, t2)).days)
+
+
+# d = datetime.timedelta(days=(t2-t1).days)
+# print(d)
+
+# t3 = t1+d
+
+# print(t3)
+
+
+# s = set(l)
+# print(s)
+
+s= '862466030915045_205d472519ba_second'
+
+v = [('862466030915045_205d472519ba_first', 0.8), ('865920023183737_a09347eec5dc_first', 0.8)]
+
+if [val[0] for val in v].index(s):
+    print("T")
+
+# print(l)
+
+
+
+
+

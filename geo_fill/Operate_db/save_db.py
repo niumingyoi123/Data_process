@@ -3,7 +3,7 @@ import json
 import pickle
 
 def insert_db():
-    db = pymysql.connect("localhost","root","123456","user_trajectory")
+    db = pymysql.connect("localhost","root","Meituan-0502","user_trajectory")
     cursor = db.cursor()
     geo_file = open("/Users/niumingyi/Downloads/data/beijing2_geo_data", "r")
     geo_datas = geo_file.readlines()

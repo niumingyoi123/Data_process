@@ -1,6 +1,6 @@
 import pymysql
 
-db = pymysql.connect("localhost","root","123456","user_trajectory")
+db = pymysql.connect("localhost","root","Meituan-0502","user_trajectory")
 cursor = db.cursor()
 cursor.execute("DROP TABLE IF EXISTS beijing")
 sql = """CREATE TABLE beijing (

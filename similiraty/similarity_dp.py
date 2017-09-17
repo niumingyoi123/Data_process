@@ -88,30 +88,11 @@ def score_type(type_code1,type_code2):
         return 0
 
 
-# traj_A = np.array([[-122.39534, 37.77678],[-122.3992 , 37.77631],[-122.40235, 37.77594],[-122.40553, 37.77848],
-#                    [-122.40801, 37.78043],[-122.40837, 37.78066],[-122.41103, 37.78463],[-122.41207, 37.78954],
-#                    [-122.41252, 37.79232],[-122.41316, 37.7951 ],[-122.41392, 37.7989 ],[-122.41435, 37.80129],
-#                    [-122.41434, 37.80129]])
-# traj_B = np.array([[-122.39472, 37.77672],[-122.3946 , 37.77679],[-122.39314, 37.77846],[-122.39566, 37.78113],
-#                    [-122.39978, 37.78438],[-122.40301, 37.78708],[-122.4048 , 37.78666],[-122.40584, 37.78564],
-#                    [-122.40826, 37.78385],[-122.41061, 37.78321],[-122.41252, 37.78299]])
-#
-# lcss = g_lcss(traj_A,traj_B,100)
-#
-# print(lcss)
+tradj0 = {'deviceId': 'A100003A5C0901_6c25b97aceaa_first', 'tradj': [{'timestamp': datetime.datetime(2016, 8, 1, 16, 40, 17), 'typecode': '050102'}]}
+tradj1 = {'deviceId': 'A100003A5C0901_6c25b97aceaa_second', 'tradj': [{'timestamp': datetime.datetime(2016, 8, 2, 2, 30, 15), 'typecode': '050102'}, {'timestamp': datetime.datetime(2016, 8, 2, 6, 40, 12), 'typecode': '050000'}, {'timestamp': datetime.datetime(2016, 8, 2, 7, 10, 6), 'typecode': '061210'}, {'timestamp': datetime.datetime(2016, 8, 2, 7, 30, 12), 'typecode': '050100'}, {'timestamp': datetime.datetime(2016, 8, 6, 22, 10, 17), 'typecode': '050102'}]}
 
-# t0 = {'deviceId': '866723025533423_7451ba4e7aab', 'tradj': [{'timestamp': datetime.datetime(2016, 11, 12, 12, 15, 57), 'typecode': '060000'}, {'timestamp': datetime.datetime(2016, 11, 12, 14, 30, 12), 'typecode': '060000'}]}
-# t1 = {'deviceId': '868146029200690_accf85c1230f', 'tradj': [{'timestamp': datetime.datetime(2016, 9, 6, 20, 14, 22), 'typecode': '060602'}, {'timestamp': datetime.datetime(2016, 11, 5, 19, 17, 57), 'typecode': '071600'}, {'timestamp': datetime.datetime(2016, 11, 7, 17, 33, 38), 'typecode': '060602'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 0, 9), 'typecode': '050300'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 30, 9), 'typecode': '060000'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 40, 9), 'typecode': '060000'}, {'timestamp': datetime.datetime(2016, 11, 12, 10, 50, 9), 'typecode': '050118'}, {'timestamp': datetime.datetime(2016, 11, 12, 11, 0, 11), 'typecode': '060602'}]}
-#
-# timestamp = t0['tradj'][0]['timestamp']
-#
-# print(timestamp)
-#
-# d = timestamp.date()
-#
-# w = d.weekday()
-#
-# print(w)
 
-# sim = g_lcss(t0,t1,3)
-# print(sim)
+
+pre = g_lcss(tradj0, tradj1, 3)
+
+print(pre)

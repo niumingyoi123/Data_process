@@ -12,7 +12,7 @@ def cal_recall(rec_list, test_list):
 
 
 def get_rec_list(sorted_list):
-    db = pymysql.connect("localhost","root","123456","user_trajectory")
+    db = pymysql.connect("localhost","root","Meituan-0502","user_trajectory")
     cursor = db.cursor()
     hit_t = 0
     rec_t = 0
@@ -44,7 +44,7 @@ def get_rec_list(sorted_list):
 
 
 def insert_rec_db(cal_list):
-    db = pymysql.connect("localhost","root","123456","user_trajectory")
+    db = pymysql.connect("localhost","root","Meituan-0502","user_trajectory")
     cursor = db.cursor()
     insert_list = []
     sql = 'INSERT INTO rec_list (DEVICEID, REC_POI) VALUES(%s,%s)'
@@ -61,14 +61,56 @@ def insert_rec_db(cal_list):
     db.commit()
     db.close()
 
-# f_cal = open('cal_list', 'rb')
+def get_split_rec_list(sorted_split_list, top_index=1):
+    total_num = len(sorted_split_list)
+    perfect_pre = 0
+    success_pre = 0
+    bad_pre = 0
+    for sort_split_poi in sorted_split_list:
+        for k, v in sort_split_poi.items():
+            if k[29:] == "first":
+                if (k.replace("first", "second"), v[0][1]) in [val[0] for val in v]:
+                    perfect_pre += 1
+                    success_pre += 1
+                else:
+                    try:
+                        i = [val[0] for val in v].index()
+                        if i <= top_index:
+                            success_pre += 1
+                    except:
+                        bad_pre += 1
+                        print("Bad precision")
+            else:
+                if (k.replace("second", "first"), v[0][1]) in [val[0] for val in v]:
+                    perfect_pre += 1
+                    success_pre += 1
+                else:
+                    try:
+                        i = [val[0] for val in v].index()
+                        if i <= top_index:
+                            success_pre += 1
+                    except:
+                        bad_pre += 1
+                        print("Bad precision")
+
+    success_rate = success_pre/total_num
+    perfect_rate = perfect_pre/total_num
+
+    print(success_rate)
+    print(perfect_rate)
+
+
+
+# f_cal = open('cal_list_split_300_30', 'rb')
 # cal_list = pickle.load(f_cal)
 # f_cal.close()
 # insert_rec_db(cal_list)
-f_sorted = open('sorted_list_300_30_week_2', 'rb')
-sorted_list = pickle.load(f_sorted)
-# f_sorted.close()
+f_sorted = open('sorted_list_split_300_30', 'rb')
+sorted_split_list = pickle.load(f_sorted)
+f_sorted.close()
+get_split_rec_list(sorted_split_list, 10)
+
 # print(cal_list)
 # print(sorted_list)
 
-get_rec_list(sorted_list)
+# get_rec_list(sorted_list)
