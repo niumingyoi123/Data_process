@@ -9,7 +9,7 @@ import _pickle as pickle
 from datetime import timedelta
 import datetime
 import json
-from util.date_encoder import DateEncoder
+
 
 app_key_list = ["92dfa9b76e3506a58fb42499b5f660cb",
                 "08a7e019c18c2f7d06ad4587f6e3bf4a",
@@ -54,6 +54,16 @@ def get_traj(user):
     except:
         print("Error : unable to fetch data")
     return users_traj
+
+def cal_list_cmp(rpc_list):
+    cal_cmp_dict = {}
+    for user in rpc_list:
+        user_traj = get_traj(user)
+        cal_cmp_dict[user] = [(user_poi[1],user_poi[2]) for user_poi in user_traj]
+    print(cal_cmp_dict)
+    f_sorted = open('cal_list_cmp', 'wb')
+    pickle.dump(cal_cmp_dict, f_sorted, True)
+    f_sorted.close()
 
 
 def stay_regions(users_traj, DT, TT):
@@ -153,12 +163,12 @@ def cal_similarity(user, catg_region, categ_locations):
 
 
 def cal_sim_result(rpc_list, dt, tt, threshold, time_span):
-    # cal_list = []
-    cal_list_file = open('cal_list_split_250_300_30', 'rb')
-    cal_list = pickle.load(cal_list_file)
+    cal_list = []
+    # cal_list_file = open('cal_list_split_250_300_30', 'rb')
+    # cal_list = pickle.load(cal_list_file)
     for i, user in enumerate(rpc_list):
-        if i <=250:
-            continue
+        # if i <=250:
+        #     continue
         print("第%s个用户%s " % (i, user))
         user_traj = get_traj(user)
         user_first = "%s_first" % user
@@ -220,8 +230,8 @@ def sorted_list_cal(cal_list, time_span):
         for j in range(len(cal_list)):
             if i != j:
                 recommend_id = cal_list[j]['deviceId']
-                item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span)) # 计算时间
-                # item_tuple = (recommend_id, similarity_dp.g_lcss_week(cal_list[i], cal_list[j])) # 计算week
+                # item_tuple = (recommend_id, similarity_dp.g_lcss(cal_list[i], cal_list[j], time_span)) # 计算时间
+                item_tuple = (recommend_id, similarity_dp.g_lcss_week(cal_list[i], cal_list[j])) # 计算week
                 recommend_list.append(item_tuple)
         recommend_list.sort(key=lambda tup: tup[1], reverse=True)
         sim_dict[target_id] = recommend_list
@@ -230,16 +240,18 @@ def sorted_list_cal(cal_list, time_span):
 
 
 
-# rpc_list = fetch_rpc(10, timedelta(days=5))
+
+rpc_list = fetch_rpc(10, timedelta(days=5))
+cal_list_cmp(rpc_list)
 # r = cal_sim_result(rpc_list, 300, 30, 0.01, 3)
-f = open('cal_list_split_300_30', 'rb')
-cal_list_split_300_30 = pickle.load(f)
-f.close()
+# f = open('cal_list_300_30', 'rb')
+# cal_list_300_30 = pickle.load(f)
+# f.close()
 # print(cal_list_split_300_30)
-sorted_list_split_300_30_week = sorted_list_cal(cal_list_split_300_30, 3)
-f_sorted = open('sorted_list_split_300_30', 'wb')
-pickle.dump(sorted_list_split_300_30_week, f_sorted, True)
-f_sorted.close()
+# sorted_list_split_300_30_week = sorted_list_cal(cal_list_split_300_30, 3)
+# f_sorted = open('sorted_list_split_300_30', 'wb')
+# pickle.dump(sorted_list_split_300_30_week, f_sorted, True)
+# f_sorted.close()
 
 # print(sorted_list_split_300_30_week)
 # f = open('sorted_list_300_30', 'rb')

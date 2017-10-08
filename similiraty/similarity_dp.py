@@ -88,11 +88,11 @@ def score_type(type_code1,type_code2):
         return 0
 
 
-tradj0 = {'deviceId': 'A100003A5C0901_6c25b97aceaa_first', 'tradj': [{'timestamp': datetime.datetime(2016, 8, 1, 16, 40, 17), 'typecode': '050102'}]}
-tradj1 = {'deviceId': 'A100003A5C0901_6c25b97aceaa_second', 'tradj': [{'timestamp': datetime.datetime(2016, 8, 2, 2, 30, 15), 'typecode': '050102'}, {'timestamp': datetime.datetime(2016, 8, 2, 6, 40, 12), 'typecode': '050000'}, {'timestamp': datetime.datetime(2016, 8, 2, 7, 10, 6), 'typecode': '061210'}, {'timestamp': datetime.datetime(2016, 8, 2, 7, 30, 12), 'typecode': '050100'}, {'timestamp': datetime.datetime(2016, 8, 6, 22, 10, 17), 'typecode': '050102'}]}
+# tradj0 = {'deviceId': 'A100003A5C0901_6c25b97aceaa_first', 'tradj': [{'timestamp': datetime.datetime(2016, 8, 1, 16, 40, 17), 'typecode': '050102'}]}
+# tradj1 = {'deviceId': 'A100003A5C0901_6c25b97aceaa_second', 'tradj': [{'timestamp': datetime.datetime(2016, 8, 2, 2, 30, 15), 'typecode': '050102'}, {'timestamp': datetime.datetime(2016, 8, 2, 6, 40, 12), 'typecode': '050000'}, {'timestamp': datetime.datetime(2016, 8, 2, 7, 10, 6), 'typecode': '061210'}, {'timestamp': datetime.datetime(2016, 8, 2, 7, 30, 12), 'typecode': '050100'}, {'timestamp': datetime.datetime(2016, 8, 6, 22, 10, 17), 'typecode': '050102'}]}
 
 
 
-pre = g_lcss(tradj0, tradj1, 3)
+# pre = g_lcss(tradj0, tradj1, 3)
 
-print(pre)
+# print(pre)

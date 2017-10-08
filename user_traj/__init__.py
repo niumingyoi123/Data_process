@@ -48,14 +48,6 @@ app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
 # s = set(l)
 # print(s)
 
-s= '862466030915045_205d472519ba_second'
-
-v = [('862466030915045_205d472519ba_first', 0.8), ('865920023183737_a09347eec5dc_first', 0.8)]
-
-if [val[0] for val in v].index(s):
-    print("T")
-
-# print(l)
 
 
 
