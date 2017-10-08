@@ -1,5 +1,8 @@
 import _pickle as pickle
 import datetime
+import pymysql
+import re
+from collections import Counter
 
 app_key_list = ["52c469b8f1f26f14c28576d2d4b6e87c",
                 "ffc6fead741c315a8cc4876e07bab825",
@@ -23,4 +26,12 @@ app_key_list_2 = ["a91c1036cbc7858327f98826ffb9d36b",
                     "7916fd8af577ae58caf43b4fdbadc29a",
                     "7d9edea271e7314821c852e888cde315", ]
 
+# db = pymysql.connect("localhost", "root", "123456", "user_trajectory")
 
+# r = "050300,050300,050300,050300,050300,070000,050300,050300,050300,060605|071100,050300"
+# l_temp = re.split(",|\|", r)
+
+# print(l_temp)
+# res = Counter(l_temp)
+# most_count = res.most_common(1)[0][1]
+# print(most_count)

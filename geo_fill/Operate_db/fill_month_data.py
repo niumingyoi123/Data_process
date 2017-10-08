@@ -1,11 +1,11 @@
 #coding:utf-8
 
 import json,os,csv
-
+import pickle
 
 
 def load_geo2():
-    with open('/Users/niumingyi/Documents/pingan.csv', newline='', encoding='utf-8',errors='ignore') as csvfile:
+    with open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\pingan\\pingan.csv', newline='', encoding='utf-8',errors='ignore') as csvfile:
         reader = csv.reader(csvfile)
 
     # if os.path.exists('/Users/niumingyi/Documents/pingan.csv'):
@@ -14,28 +14,27 @@ def load_geo2():
     #     file_geo.close()
         geo_routmacs = {}
         try:
-            for line in reader:
-                part = line.split(',')
+            for part in reader:
+                # part = line.split(',')
                 geo_routmac = {}
                 geo_routmac[part[1]] = [part[3], part[4]]
                 geo_routmacs[part[2]] = geo_routmac
         except:
-            print(line)
+            print(part)
     return geo_routmacs
 
-def load_user2(geo_routmacs,d):
+def load_user2(geo_routmacs,d, file_object):
     load_user = {}
-    with open('/Users/niumingyi/Downloads/data/%s.json' % d, encoding='utf-8',
+    with open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\11.18-12.31\\wifi_list_smzapi003_2016120%s.json' % d, encoding='utf-8',
               errors='ignore') as Jsonfile:
         user_datas = Jsonfile.readlines()
         count = 0
         blank_num = 0
         count_0mac = 0
-        if not os.path.exists('/Users/niumingyi/Downloads/data/geo_data_%d'%d):
-            file_object = open('/Users/niumingyi/Downloads/data/geo_data_%d'%d, 'x')
-        else:
-            file_object = open('/Users/niumingyi/Downloads/data/geo_data_%d'%d, 'a')
-        # file_object = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\10.17-11.17\\geo_data', 'a')
+        # if not os.path.exists('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\11.18-12.31\\geo_data'):
+        #     file_object = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\11.18-12.31\\geo_data', 'x')
+        # else:
+        #     file_object = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\11.18-12.31\\geo_data', 'a')
         for user_data in user_datas:
             try:
                 count += 1
@@ -43,7 +42,7 @@ def load_user2(geo_routmacs,d):
                 timestamp = user_data_json['timestamp']
                 deviceid = user_data_json['deviceid']
                 wifi_lists = user_data_json['wifi_list']
-                used = False;
+                used = False
                 for wifi_list in wifi_lists:
                     routemac = wifi_list['routemac']
                     if routemac == '00:00:00:00:00:00':
@@ -55,7 +54,8 @@ def load_user2(geo_routmacs,d):
                         load_user['deviceid'] = deviceid
                         load_user['longitude'] = geo_routmacs[routemac][ssid_geo][0]
                         load_user['latitude'] = geo_routmacs[routemac][ssid_geo][1]
-                        file_object.write(json.dumps(load_user) + '\n')
+                        # file_object.write(json.dumps(load_user) + '\n')
+                        pickle.dump(json.dumps(load_user) + '\n', file_object, True)
                         continue
                 if used:
                     count_0mac += 1
@@ -68,5 +68,10 @@ def load_user2(geo_routmacs,d):
 
 
 geo_routmacs = load_geo2()
-for d in range(1,133):
-    load_user2(geo_routmacs,d)
+# file_object = open('F:\\毕设\\毕设参考\\数据集\\wifi数据集\\11.18-12.31\\geo_data', 'wb')
+# for d in range(1, 10):
+#     load_user2(geo_routmacs, d, file_object)
+# file_object.close()
+# f_sorted = open('sorted_list_300_30_week_2', 'wb')
+# pickle.dump(sorted_list_300_30, f_sorted, True)
+# f_sorted.close()

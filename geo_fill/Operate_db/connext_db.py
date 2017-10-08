@@ -2,15 +2,15 @@ import pymysql
 
 db = pymysql.connect("localhost","root","123456","user_trajectory")
 cursor = db.cursor()
-cursor.execute("DROP TABLE IF EXISTS beijing")
-sql = """CREATE TABLE beijing (
-        ID INT auto_increment primary key,
-        TIMESTAMP DATETIME,
-        DEVICEID CHAR(200) NOT NULL,
-        LONGITUDE DECIMAL(9,6),
-        LATITUDE  DECIMAL(9,6)
-)"""
 
-cursor.execute(sql)
+bssids = [["351671070295053_14b37001f63b", "351824074135078_9C2A831EF337"]]
 
+
+
+sql = """ SELECT * FROM `rec_list` WHERE `DEVICEID` in %s """
+
+cursor.execute(sql, bssids)
+
+result = cursor.fetchall()
+print(result)
 db.close()
